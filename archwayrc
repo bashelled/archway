@@ -1,0 +1,44 @@
+# archwayrc - settings for archway.
+# Note: You must partition disks yourself. Archway does not do it for you.
+# Edit to your likings.
+
+# Keymap  =  Name {uk, us, br, de...}
+vcons="uk"
+
+# Pacstrap  =  Packages
+pacstrap="base linux linux-firmware nano vim networkmanager"
+
+# Desktop  =  Enviroment/WM {gnome kde i3 none}
+deskenv="gnome"
+
+# User
+user="username"	
+passwd="password"
+
+# Hostname
+host="vault"
+
+# Rootpass
+rootpwd="tooroot"
+
+# Timezone
+timezone="Europe/London"
+
+# Boot
+boot="sda1"
+
+# Swap
+swap="sda2"
+
+# Home
+home="sda3"
+
+# Root
+root="sda4"
+
+# ESP
+esp="sda5"
+
+# Locale
+locale="en_US.UTF-8"
+

@@ -1,0 +1,9 @@
+
+{
+  "name": "archway",
+  "version": "21.3.5",
+  "description": "An easy to use CLI installer for Arch Linux"
+  "global": "1",
+  "install": "install -b archway ${PREFIX:-/usr/local}/bin/archway",
+  "scripts": [ "archway" ]
+}
