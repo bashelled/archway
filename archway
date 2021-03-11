@@ -55,16 +55,11 @@ clear
 if [[ -d /sys/firmware/uefi ]]; then
   uefion=1
 fi
+
 echo "===> Installing Arch..."
 sleep 1
 echo "Set keymap"
-if loadkeys $vcons; then
-  echo "$vcons keymap loaded!"
-else
-  echo "There was a problem loading the $vcons keymap."
-  exit 127
-fi
-
+loadkeys $vcons
 echo "Format partitions"
 mkfs.ext4 /dev/$root
 if [[ "$uefion" == "1" ]]; then
@@ -77,30 +72,22 @@ mkdir -p /mnt/{boot,home}
 mount /dev/$boot /mnt/boot
 mount /dev/$home /mnt/home
 
-echo "Installing..."
-if pacstrap /mnt $pacstrap && genfstab -U /mnt >> /mnt/etc/fstab; then
-  echo "Pacstrapped packages!"
-else
-  echo "Fatal problem with Pacstrap."
-fi
+pacstrap /mnt $pacstrap && genfstab -U /mnt >> /mnt/etc/fstab
 
-if arch-chroot /mnt ln -sf /usr/share/zoneinfo/$timezone /etc/localtime && \
-echo $locale > /etc/locale.gen && \
-locale-gen && \
-echo LANG=$locale > /etc/locale.conf && \
-echo KEYMAP=$vcons > /etc/vconsole && \
-echo $host > /etc/hostname && \
-echo "127.0.0.1	localhost" > /etc/hosts && \
-echo "::1		localhost" >> /etc/hosts && \
-echo "127.0.1.1	$host.localdomain	$host" >> /etc/hosts && \
-(echo $rootpwd; echo $rootpwd) | passwd root && \
-useradd $user -m -r -p $passwd && \
-mkinitcpio -P && \
-bootctl install && bootctl update; then
-  echo "Done! Reboot into your system."
-else
-  echo "Failure."
-fi
+arch-chroot /mnt ln -sf /usr/share/zoneinfo/$timezone /etc/localtime && \
+arch-chroot /mnt echo $locale > /etc/locale.gen && \
+arch-chroot /mnt locale-gen && \
+arch-chroot /mnt echo LANG=$locale > /etc/locale.conf && \
+arch-chroot /mnt echo KEYMAP=$vcons > /etc/vconsole && \
+arch-chroot /mnt echo $host > /etc/hostname && \
+arch-chroot /mnt echo "127.0.0.1	localhost" > /etc/hosts && \
+arch-chroot /mnt echo "::1		localhost" >> /etc/hosts && \
+arch-chroot /mnt echo "127.0.1.1	$host.localdomain	$host" >> /etc/hosts && \
+arch-chroot /mnt (echo $rootpwd; echo $rootpwd) | passwd root && \
+arch-chroot /mnt useradd $user -m -r -p $passwd && \
+arch-chroot /mnt mkinitcpio -P && \
+arch-chroot /mnt bootctl install && bootctl update
+echo "Done! Reboot into your system."
 }
 
 function usage()
