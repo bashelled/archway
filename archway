@@ -5,7 +5,7 @@
 
 # Script declaration
 SCRIPTNAME="${0##*[\\/]}"
-SCRIPTVER="2020.3.6"
+SCRIPTVER="2021.3.11"
 black="\u001b[30m"
 red="\u001b[31m"
 green="\u001b[32m"
