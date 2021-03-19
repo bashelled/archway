@@ -83,7 +83,7 @@ arch-chroot /mnt echo $host > /etc/hostname && \
 arch-chroot /mnt echo "127.0.0.1	localhost" > /etc/hosts && \
 arch-chroot /mnt echo "::1		localhost" >> /etc/hosts && \
 arch-chroot /mnt echo "127.0.1.1	$host.localdomain	$host" >> /etc/hosts && \
-arch-chroot /mnt (echo $rootpwd; echo $rootpwd) | passwd root && \
+arch-chroot /mnt 'echo $rootpwd; echo $rootpwd | passwd root' && \
 arch-chroot /mnt useradd $user -m -r -p $passwd && \
 arch-chroot /mnt mkinitcpio -P && \
 arch-chroot /mnt bootctl install && bootctl update
