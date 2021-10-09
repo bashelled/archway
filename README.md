@@ -4,6 +4,8 @@
 ![GH License](https://img.shields.io/github/license/bashelled/archway)
 [![basher install](https://img.shields.io/badge/basher-install-white?logo=gnu-bash&style=flat)](https://basher.gitparade.com/package/)
 
+(NOTE: Archway isn't stable anymore! PLEASE use something like archinstall, archfi or alis (similar to archway) and wait until archway gets fixed.)
+
 # archway
 
 Archway installs Arch Linux (based distributions) with ease, step by step.
@@ -14,11 +16,11 @@ It's simple to use, and can be tweaked for more efficiency by editing archwayrc.
 
 with [basher](https://github.com/basherpm/basher)
 
-	$ basher install bashelled/archway
+	$ basher install bashelled/archway (broken, and pointless)
 
 or with [bpkg](https://github.com/bpkg/bpkg)
 
-	$ bpkg install bashelled/archway
+	$ bpkg install bashelled/archway (broken, and pointless)
 
 or with `git`
 
@@ -27,7 +29,7 @@ or with `git`
 
 ## Usage
 
-	$ archway (options) [command]
+	$ ./awi (options) [command]
 
 See docs/MANPAGE.md for more information.
 
