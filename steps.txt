@@ -1,0 +1,8 @@
+
+awi steps:
+	First the user edits a text file to add all sorts of configuration; sort of like alis and the infamous easygentoo installers
+	Then, we source this file into bash and read the config
+	We then display all the info to the user (passwords encrypted with base)
+	After that we start installation
+
+((not done!))

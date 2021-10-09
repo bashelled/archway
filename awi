@@ -1,0 +1,146 @@
+#!/bin/bash
+
+# ArchWay Installation (part of Archway)
+# Licensed under the MIT License.
+
+# Script declaration
+SCRIPTNAME="${0##*[\\/]}"
+SCRIPTVER="0.13"
+black="\u001b[30m"
+red="\u001b[31m"
+green="\u001b[32m"
+yellow="\u001b[33m"
+blue="\u001b[34m"
+magenta="\u001b[35m"
+cyan="\u001b[36m"
+white="\u001b[37m"
+nc="\u001b[0m"
+
+
+function pause() {
+    prompt="$1"
+    echo -e -n "\033[1;36m$prompt"
+    echo -e -n '\033[0m'
+    read
+}
+
+function archway() {
+  if [[ -f archwayrc ]]; then
+  . archwayrc
+else
+  echo "[!!] archwayrc not found! Check if it exists, and make sure to edit it with your preferences."
+  exit 127
+fi
+
+echo "[archway] by bashelled"
+pause "Install Arch? (enter = yes; ^C/ctrl+c = no)"
+echo "The following will be partitioned and formatted:"
+sleep 2
+
+echo " -> Root: $root"
+sleep 1
+echo " -> Boot: $boot"
+sleep 1
+echo " -> Home: $home"
+sleep 1
+echo " -> Swap: $swap"
+sleep 1
+echo ""
+sleep 0.5
+
+echo "Actual configuration:"
+sleep 2
+echo " -> User: $user, password: '$(echo $passwd | base64 | base64 | base64)' (passwd encrypted, not actual passwd)"
+sleep 1
+echo " -> root password: '$(echo $rootpwd | base64 | base64 | base64 | base32 )' (passwd encrypted, not actual passwd)"
+sleep 1
+echo " -> Hostname: $host"
+sleep 1
+([[ "${deskenv}" == "" ]] && echo "-> The desktop will be $deskenv") || echo "-> No desktop to be installed"
+sleep 1
+echo " -> The default keymap will be $vcons"
+sleep 1
+echo " -> The following will be installed to the new system: $pacstrap"
+sleep 1
+echo " -> The timezone will be set to $timezone and the default locale will be $locale"
+sleep 1
+echo " --> Use Ctrl-C to exit, and Enter to continue"
+sleep 0.0001
+echo " ==> P.S. Edit the archwayrc file to customize your install"
+sleep 0.0001
+echo " ==> [!!] Make sure it exists, and has your preferences in it!"
+pause "[Are you sure you want to proceed?] "
+pause "[Are you really sure you want to proceed?] "
+pause "[Are you REALLY sure??] "
+pause "{WARNING!! This can NOT be reverted! Are you REALLY, REALLY, sure???} "
+clear
+
+[[ -d /sys/firmware/efi ]] && {
+	echo "Note: Your PC BIOS/U-Boot implentation supports U/EFI."
+	echo "However, it may also support Legacy BIOS"
+	efion=1
+
+}
+
+echo "===> Installing Arch..."
+sleep 1
+echo "Set keymap"
+loadkeys $vcons
+echo "Format partitions"
+mkfs.ext4 /dev/$root
+if [[ "$efion" == "1" ]]; then
+  mkfs.fat -F 32 /dev/$boot
+else
+  mkfs.ext4 /dev/$boot
+fi
+mount /dev/$root /mnt
+mkdir -p /mnt/{boot,home}
+mount /dev/$boot /mnt/boot
+mount /dev/$home /mnt/home
+
+pacstrap /mnt $pacstrap && genfstab -U /mnt >> /mnt/etc/fstab
+
+arch-chroot /mnt ln -sf /usr/share/zoneinfo/$timezone /etc/localtime && \ # we use arch-chroot to link because /mnt-linking may cause problems
+echo $locale > /mnt/etc/locale.gen && \
+arch-chroot /mnt locale-gen && \
+echo LANG=$locale > /mnt/etc/locale.conf && \
+echo KEYMAP=$vcons > /mnt/etc/vconsole && \
+echo $host > /mnt/etc/hostname && \
+echo "127.0.0.1	localhost" > /etc/hosts && \
+echo "::1		localhost" >> /etc/hosts && \
+echo "127.0.1.1	$host.localdomain	$host" >> /etc/hosts && \
+arch-chroot /mnt 'echo $rootpwd; echo $rootpwd | passwd root' && \
+useradd $user -m -r -p $passwd && \
+arch-chroot /mnt bootctl install && bootctl update
+} && echo "Done! Reboot into your system." || echo "Error, please see the error messages above"
+
+}
+
+function usage()
+{
+        cat << EOF
+archway version $SCRIPTVER
+Archway is an easy to use Arch Linux installer written
+entirely in shell that allows you to tweak to your
+preferences, one by one.
+
+Usage: $SCRIPTNAME [-*] [options] command
+
+  -h, --help              display this help and exit
+  -V, --version           output version information and exit
+EOF
+}
+
+function version() {
+echo "[archway] by bashelled"
+echo "version $SCRIPTVER"
+echo "Copyright (c) 2021-present Bashel"
+}
+
+if [[ "$1" == "-h" || "$1" == "--help" ]]; then
+        usage
+elif [[ "$1" == "-V" || "$1" == "--version" ]]; then
+        version
+else
+        archway
+fi
